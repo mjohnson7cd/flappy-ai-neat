@@ -202,6 +202,17 @@ def main(genomes, config):
             if event.type == pygame.QUIT:
                 run = False
 
+        pipe_ind = 0 
+        if len(birds) > 0:
+            if len(pipes) > 1 and birds[0].x > pipes[0].x + pipes[0].PIPE_TOP.get_width():
+                pipe_ind = 1
+
+        for x, bird in enumerate(birds):
+            bird.move()
+            ge[x].fitness += 0.1
+
+            output = nets[x].activate((bird.y, abs(bird.y - pipes[pipe_ind].height), abs(birds.y-pipes[pipe_ind].bottom)))
+
         # bird.move()
         add_pipe = False
         rem = []
@@ -233,9 +244,11 @@ def main(genomes, config):
         for r in rem:
             pipes.remove(r)
 
-        for bird in birds:
+        for x, bird in enumerate(birds):
             if bird.y + bird.img.get_height() >= 730:
-                pass
+                birds.pop(x)
+                nets.pop(x)
+                ge.pop(x)                
 
         base.move()
         draw_window(win, bird, pipes, base, score)
